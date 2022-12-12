@@ -4,6 +4,7 @@ package com.odontologov2.Odontologo.controller;
 import com.odontologov2.Odontologo.Exceptions.ResourceNotFoundException;
 import com.odontologov2.Odontologo.entity.Odontologo;
 import com.odontologov2.Odontologo.service.OdontologoService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/odontologos")
 public class OdontologoController {
+
+    private static final Logger logger = Logger.getLogger(OdontologoController.class);
 
     private OdontologoService odontologoService;
     @Autowired
@@ -30,13 +33,14 @@ public class OdontologoController {
         return ResponseEntity.ok(odontologoService.buscarTodosOdontologos());
     }
     @GetMapping("{id}")
-    public ResponseEntity<Odontologo> buscarOdontologo(@PathVariable Long id){
+    public ResponseEntity<Odontologo> buscarOdontologo(@PathVariable Long id) throws ResourceNotFoundException{
         Optional<Odontologo> odontologoBuscado=odontologoService.buscarOdontologo(id);
         if (odontologoBuscado.isPresent()){
             return ResponseEntity.ok(odontologoBuscado.get());
         }
         else{
-            return ResponseEntity.notFound().build();
+            logger.error("Error tratando de buscar odontologo por id");
+            throw new ResourceNotFoundException("El Id ingresado no existe");
         }
     }
     @DeleteMapping("/{id}")

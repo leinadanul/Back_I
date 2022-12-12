@@ -3,6 +3,7 @@ package com.odontologov2.Odontologo.controller;
 import com.odontologov2.Odontologo.Exceptions.ResourceNotFoundException;
 import com.odontologov2.Odontologo.entity.Paciente;
 import com.odontologov2.Odontologo.service.PacienteService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
+
+    private static final Logger logger = Logger.getLogger(PacienteController.class);
     private PacienteService pacienteService;
     @Autowired
     public PacienteController(PacienteService pacienteService) {
@@ -31,10 +34,11 @@ public class PacienteController {
     }
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Paciente> buscarPaciente(@PathVariable Long id){
+    public ResponseEntity<Paciente> buscarPaciente(@PathVariable Long id) throws  ResourceNotFoundException{
         Optional<Paciente> pacienteBuscado= pacienteService.buscarPaciente(id);
         if (pacienteBuscado.isPresent()){
-            return ResponseEntity.ok(pacienteBuscado.get());
+            logger.error("Error tratando de listar los pacientes");
+            throw new ResourceNotFoundException("Error. No se pudo traer turnos.");
         }
         else{
             return ResponseEntity.notFound().build();

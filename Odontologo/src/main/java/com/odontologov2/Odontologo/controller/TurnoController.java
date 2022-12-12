@@ -62,14 +62,15 @@ public class TurnoController {
     }
 
     @PostMapping
-    public ResponseEntity<TurnoDTO> registrarTurno(@RequestBody TurnoDTO turno) {
+    public ResponseEntity<TurnoDTO> registrarTurno(@RequestBody TurnoDTO turno) throws ResourceNotFoundException {
         Optional<Paciente> pacinteBuscado = pacienteService.buscarPaciente(turno.getPacienteId());
         Optional<Odontologo> odontologoBuscado = odontologoService.buscarOdontologo(turno.getId());
 
         if (pacinteBuscado.isPresent() && odontologoBuscado.isPresent()) {
             return ResponseEntity.ok(turnoService.guardarTurno(turno));
         } else {
-            return ResponseEntity.badRequest().build();
+            logger.error("Error al agregar turno");
+            throw new ResourceNotFoundException("Revisa ID del paciente o ID del odontologo");
         }
 
     }
